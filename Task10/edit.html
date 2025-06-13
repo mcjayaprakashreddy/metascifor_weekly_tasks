@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>React PUT Request Example</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 30px;
+      }
+
+      input {
+        padding: 6px;
+        margin: 6px 0;
+        width: 100%;
+      }
+
+      button {
+        padding: 10px 20px;
+        margin-top: 10px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      .success {
+        margin-top: 15px;
+        color: green;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState } = React;
+
+      function UpdateUserForm() {
+        const [username, setUsername] = useState('');
+        const [job, setJob] = useState('');
+        const [success, setSuccess] = useState(false);
+
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          fetch("https://reqres.in/api/users/5", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: username,
+              job: job,
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("Updated user:", data);
+              setSuccess(true);
+              setTimeout(() => setSuccess(false), 3000); // Hide after 3 sec
+            })
+            .catch((err) => {
+              console.error("Update failed:", err);
+              alert("Update failed!");
+            });
+        };
+
+        return (
+          <div>
+            <h2>Update User Info (PUT Request)</h2>
+            <form onSubmit={handleSubmit}>
+              <label>Username:</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+              <label>Job:</label>
+              <input
+                type="text"
+                value={job}
+                onChange={(e) => setJob(e.target.value)}
+                required
+              />
+              <button type="submit">Update User</button>
+            </form>
+            {success && <div className="success">User updated successfully!</div>}
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<UpdateUserForm />);
+    </script>
+  </body>
+</html>
